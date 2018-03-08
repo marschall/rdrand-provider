@@ -1,16 +1,12 @@
 package com.github.marschall.rdrand;
 
-import static com.github.marschall.rdrand.AllZeros.allZeros;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-
-import com.github.marschall.rdrand.RdrandProvider;
 
 class RdrandProviderTest {
 
@@ -29,13 +25,14 @@ class RdrandProviderTest {
     assertNotNull(secureRandom);
 
     byte[] buffer = new byte[poolSize];
-    assertThat(buffer, allZeros());
+    AllZeroBytesAssert.assertThat(buffer).allZeros();
 
     secureRandom.nextBytes(buffer);
-    assertThat(buffer, not(allZeros()));
+    AllZeroBytesAssert.assertThat(buffer).notAllZeros();
 
     byte[] seed = secureRandom.generateSeed(poolSize);
-    assertThat(seed, not(allZeros()));
+    assertThat(seed).hasSize(poolSize);
+    AllZeroBytesAssert.assertThat(seed).notAllZeros();
   }
 
 }
