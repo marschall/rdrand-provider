@@ -19,14 +19,14 @@ public final class RdrandProvider extends Provider {
   /**
    * The name algorithm that uses the {@code RDRAND} and {@code RDSEED} hardware instructions.
    */
-  public static final String RDRAND = "rdrand";
+  public static final String ALGORITHM = "rdrand";
 
   private static final long serialVersionUID = 1L;
 
   public RdrandProvider() {
-    super(NAME, 0.1d, "getrandom (SecureRandom)");
-    this.put("SecureRandom." + RDRAND, RdrandSecureRandomSpi.class.getName());
-    this.put("SecureRandom." + RDRAND + " ThreadSafe", "true");
+    super(NAME, 0.1d, "rdrand (SecureRandom)");
+    this.put("SecureRandom." + ALGORITHM, RdrandSecureRandomSpi.class.getName());
+    this.put("SecureRandom." + ALGORITHM + " ThreadSafe", "true");
   }
 
 }

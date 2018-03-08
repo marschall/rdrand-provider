@@ -18,10 +18,10 @@ class RdrandProviderTest {
   void getrandom() throws GeneralSecurityException {
     SecureRandom secureRandom;
 
-    secureRandom = SecureRandom.getInstance(RdrandProvider.RDRAND);
+    secureRandom = SecureRandom.getInstance(RdrandProvider.ALGORITHM);
     verify(secureRandom, 1024);
 
-    secureRandom = SecureRandom.getInstance(RdrandProvider.RDRAND, RdrandProvider.NAME);
+    secureRandom = SecureRandom.getInstance(RdrandProvider.ALGORITHM, RdrandProvider.NAME);
     verify(secureRandom, 1024);
   }
 

@@ -1,6 +1,6 @@
 # RDRAND SecureRandomSPI [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/getrandom-provider/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/getrandom-provider)  [![Javadocs](https://www.javadoc.io/badge/com.github.marschall/getrandom-provider.svg)](https://www.javadoc.io/doc/com.github.marschall/getrandom-provider)
 
-A `SecureRandomSPI` that makes [getrandom()](http://man7.org/linux/man-pages/man2/getrandom.2.html) system call available to `SecureRandom`.
+A `SecureRandomSPI` that makes the RDRAND and RDSEED available to `SecureRandom`.
 
 * uses syscall, does not depend on glibc wrapper
 * tries to use stack allocation rather than allocation on the C heap
@@ -17,19 +17,11 @@ A `SecureRandomSPI` that makes [getrandom()](http://man7.org/linux/man-pages/man
 
 ## Usage
 
-A nonblocking (/dev/urandom) instance of the provider can be acquired using
+An instance of the provider can be acquired using
 
 ```java
-SecureRandom.getInstance("geturandom"); // GetrandomProvider.GETURANDOM
+SecureRandom.getInstance("rdrand"); // RdrandProvider.ALGORITHM
 ```
-
-Alternatively a blocking (/dev/random) instance of the provider can be acquired using
-
-```java
-SecureRandom.getInstance("getrandom"); // GetrandomProvider.GETRANDOM
-```
-
-The /dev/urandom variant is the preferred one, the /dev/random variant is only added for completeness, see [Myths about /dev/urandom](https://www.2uo.de/myths-about-urandom/).
 
 ## Configuration
 
