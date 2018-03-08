@@ -11,7 +11,12 @@ import org.junit.jupiter.api.Test;
 class RdrandProviderTest {
 
   @Test
-  void getrandom() throws GeneralSecurityException {
+  void isavailalbe() {
+    Rdrand.assertAvailable();
+  }
+
+  @Test
+  void rdrand() throws GeneralSecurityException {
     SecureRandom secureRandom;
 
     secureRandom = SecureRandom.getInstance(RdrandProvider.ALGORITHM);
