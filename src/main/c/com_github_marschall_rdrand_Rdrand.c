@@ -29,7 +29,7 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
 
   /* write 8 bytes at a time */
   int long_length = array_length / 8;
-  unsigned long long *long_buffer = (unsigned long long *) buffer;
+  unsigned long long *long_buffer = (unsigned long long*) buffer;
   for (int i = 0; i < long_length; i += 8)
   {
     ret = _rdrand64_step(&long_buffer[i]);
@@ -45,14 +45,19 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
     int int_length = (array_length - long_length) / 4;
     if (int_length != 0)
     {
-      unsigned int *int_buffer = (unsigned int *) buffer;
+      unsigned int *int_buffer = (unsigned int*) buffer;
       ret = _rdrand32_step(&int_buffer[long_length * 2]);
     }
 
     /* write 2 bytes if necessary */
-    if (ret == 0) {
+    if (ret == 0)
+    {
       int short_length = (array_length - long_length - int_length) / 2;
-      unsigned short short_value;
+      if (short_length != 0)
+      {
+        unsigned short *short_buffer = (unsigned short*) buffer;
+        ret = _rdrand16_step(&short_buffer[long_length * 4 + int_length * 2]);
+      }
     }
 
     /* write 1 byte if necessary */
