@@ -2,14 +2,13 @@
 
 A `SecureRandomSPI` that makes the [RDRAND](https://en.wikipedia.org/wiki/RdRand) and `RDSEED available to `SecureRandom`.
 
-* uses syscall, does not depend on glibc wrapper
-* tries to use stack allocation rather than allocation on the C heap
-* is marked as thread safe so concurrent access through `SecureRandom` will not synchronize in Java 9 and later, however there seems to be a kernel lock on /dev/urandom so you will likely not get additional parallelism
+* does not use syscalls
+* uses JNI criticals to avoid allocation and copying
+* is marked as thread safe so concurrent access through `SecureRandom` will not synchronize in Java 9 and later, offering additional parallelism
 * unlike the `NativePRNG` variants
   * does not use a file handle
-  * does not have a global lock, but see comments on the kernel lock above
+  * does not have a global lock
   * does not additionally mix with `SHA1PRNG`
-  * blocks until the urandom source has been initialized
   * zeros out native memory
 * supports the ServiceLoader mechanism
 * is a Java 9 module but works on Java 8

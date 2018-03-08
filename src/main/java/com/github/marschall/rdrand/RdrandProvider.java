@@ -27,6 +27,7 @@ public final class RdrandProvider extends Provider {
     super(NAME, 0.1d, "rdrand (SecureRandom)");
     this.put("SecureRandom." + ALGORITHM, RdrandSecureRandomSpi.class.getName());
     this.put("SecureRandom." + ALGORITHM + " ThreadSafe", "true");
+//    this.put("SecureRandom." + ALGORITHM + " ImplementedIn", "Hardware");
   }
 
 }
