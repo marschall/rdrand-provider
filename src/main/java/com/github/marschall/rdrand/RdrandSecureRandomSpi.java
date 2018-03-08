@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * <p>This class should not be instantiated directly.</p>
  */
-public class RdrandSecureRandomSpi extends SecureRandomSpi {
+public final class RdrandSecureRandomSpi extends SecureRandomSpi {
 
   private static final long serialVersionUID = 1L;
 
