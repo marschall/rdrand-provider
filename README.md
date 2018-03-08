@@ -1,6 +1,6 @@
-# RDRAND SecureRandomSPI [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/getrandom-provider/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/getrandom-provider)  [![Javadocs](https://www.javadoc.io/badge/com.github.marschall/getrandom-provider.svg)](https://www.javadoc.io/doc/com.github.marschall/getrandom-provider)
+# RDRAND SecureRandomSPI [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/rdrand-provider/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/rdrand-provider)  [![Javadocs](https://www.javadoc.io/badge/com.github.marschall/rdrand-provider.svg)](https://www.javadoc.io/doc/com.github.marschall/rdrand-provider)
 
-A `SecureRandomSPI` that makes the RDRAND and RDSEED available to `SecureRandom`.
+A `SecureRandomSPI` that makes the [RDRAND](https://en.wikipedia.org/wiki/RdRand) and `RDSEED available to `SecureRandom`.
 
 * uses syscall, does not depend on glibc wrapper
 * tries to use stack allocation rather than allocation on the C heap
@@ -37,7 +37,7 @@ For best startup performance it is recommended to extract the .so from the JAR a
 The provider can be registered programmatically using
 
 ```java
-Security.addProvider(new GetrandomProvider());
+Security.addProvider(new RdrandProvider());
 ```
 
 ### Static Configuration Java 8
@@ -45,7 +45,7 @@ Security.addProvider(new GetrandomProvider());
 The provider can be configured statically in the `java.security` file by adding the provider at the end
 
 ```
-security.provider.N=com.github.marschall.getrandom.GetrandomProvider
+security.provider.N=com.github.marschall.rdrand.RdrandProvider
 ```
 
 `N` should be the value of the last provider incremented by 1. For Oracle/OpenJDK 8 on Linux `N` should likely be 10.
@@ -59,14 +59,14 @@ Note that for this to work the provider JAR needs to be in the class path or ext
 The provider can be configured statically in the `java.security` file by adding the provider at the end
 
 ```
-security.provider.N=getrandom
+security.provider.N=rdrand
 ```
 
 `N` should be the value of the last provider incremented by 1. For Oracle/OpenJDK 9 on Linux `N` should likely be 13.
 
 This can be done [per JVM installation](https://docs.oracle.com/javase/9/security/howtoimplaprovider.htm#GUID-831AA25F-F702-442D-A2E4-8DA6DEA16F33) or [per JVM Instance](https://dzone.com/articles/how-override-java-security).
 
-The provider uses the ServiceLoader mechanism therefore using the `getrandom` string is enough, there is no need to use the fully qualified class name.
+The provider uses the ServiceLoader mechanism therefore using the `rdrand` string is enough, there is no need to use the fully qualified class name.
 
 Note that for this to work the provider JAR needs to be in the class path or module path.
 
@@ -84,17 +84,17 @@ Points 1, 2 and 3 can be configured in `CATALINA_BASE/bin/setenv.sh`
 ```sh
 #!/bin/sh
 
-CLASSPATH="/path/to/getrandom-provider-0.1.1.jar"
+CLASSPATH="/path/to/rdrand-provider-0.1.0.jar"
 CATALINA_OPTS="$CATALINA_OPTS -Djava.library.path=/path/to/folder/with/so -Djava.security.properties=/path/to/jvm.java.security"
 
 export CLASSPATH
 export CATALINA_OPTS
 ```
 
-Point can be configured on [the Manager Component](https://tomcat.apache.org/tomcat-8.5-doc/config/manager.html) in `conf/context.xml` by setting `secureRandomAlgorithm` to `geturandom`
+Point can be configured on [the Manager Component](https://tomcat.apache.org/tomcat-8.5-doc/config/manager.html) in `conf/context.xml` by setting `secureRandomAlgorithm` to `rdrand`
 
 ```xml
-<Manager secureRandomAlgorithm="geturandom">
+<Manager secureRandomAlgorithm="rdrand">
 </Manager>
 ```
 
