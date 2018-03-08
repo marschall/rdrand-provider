@@ -4,9 +4,11 @@ import java.security.SecureRandomSpi;
 import java.util.Objects;
 
 /**
- * Abstract base class for {@link SecureRandomSpi}s that use the {@code getrandom} system call.
+ * A {@link SecureRandomSpi}s that uses the {@code RDRAND} and {@code RDSEED} hardware instructions.
+ *
+ * <p>This class should not be instantiated directly.</p>
  */
-abstract class AbstractGetrandomSecureRandomSpi extends SecureRandomSpi {
+public class RdrandSecureRandomSpi extends SecureRandomSpi {
 
   private static final long serialVersionUID = 1L;
 
@@ -23,9 +25,16 @@ abstract class AbstractGetrandomSecureRandomSpi extends SecureRandomSpi {
     }
     byte[] bytes = new byte[numBytes];
     if (numBytes > 0) {
-      this.engineNextBytes(bytes);
+      Rdrand.rdseed(bytes);
     }
     return bytes;
+  }
+
+
+  @Override
+  protected void engineNextBytes(byte[] bytes) {
+    Objects.requireNonNull(bytes);
+    Rdrand.rdrand(bytes);
   }
 
 }

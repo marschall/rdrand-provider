@@ -4,14 +4,14 @@ import java.security.Security;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.marschall.rdrand.GetrandomProvider;
+import com.github.marschall.rdrand.RdrandProvider;
 
 class ProviderInstallationTest {
 
 
   @Test
   void getProvider() {
-    Security.getProvider(GetrandomProvider.NAME);
+    Security.getProvider(RdrandProvider.NAME);
   }
 
 }

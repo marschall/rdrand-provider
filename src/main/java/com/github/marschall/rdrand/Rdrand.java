@@ -9,11 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-final class Getrandom {
+final class Rdrand {
 
   static {
     String version = getVersion();
-    String libraryName = "getrandom-provider-" + version;
+    String libraryName = "rdrand-provider-" + version;
     try {
       Runtime.getRuntime().loadLibrary(libraryName);
     } catch (UnsatisfiedLinkError e) {
@@ -35,8 +35,8 @@ final class Getrandom {
   }
 
   private static String getVersion() {
-    String fileName = "getrandom-provider.version";
-    try (InputStream stream = Getrandom.class.getClassLoader().getResourceAsStream(fileName)) {
+    String fileName = "rdrand-provider.version";
+    try (InputStream stream = Rdrand.class.getClassLoader().getResourceAsStream(fileName)) {
       if (stream == null) {
         throw new AssertionError("could not load resource: " + fileName);
       }
@@ -58,12 +58,12 @@ final class Getrandom {
   private static Path extractLibrary(String fileName) {
     Path tempFile;
     try {
-      tempFile = Files.createTempFile("getrandom-provider-", ".so");
+      tempFile = Files.createTempFile("rdrand-provider-", ".so");
     } catch (IOException e) {
       throw new AssertionError("could not create temp file", e);
     }
     try (OutputStream output = Files.newOutputStream(tempFile);
-         InputStream input = Getrandom.class.getClassLoader().getResourceAsStream(fileName)) {
+         InputStream input = Rdrand.class.getClassLoader().getResourceAsStream(fileName)) {
       if (input == null) {
         throw new AssertionError("could not load resource: " + fileName);
       }
@@ -81,36 +81,36 @@ final class Getrandom {
     return tempFile;
   }
 
-  private static final int EMALLOCNULL = 1;
-  private static final int EFAULT = 14;
-  private static final int EINTR = 4;
-  private static final int EINVAL = 22;
-
-  private Getrandom() {
+  private Rdrand() {
     throw new AssertionError("not instantiable");
   }
 
-  static void getrandom(byte[] bytes, boolean random) {
+  static void rdrand(byte[] bytes) {
     Objects.requireNonNull(bytes);
-    int exitCode = getrandom0(bytes, bytes.length, random);
+    int exitCode = rdrand0(bytes, bytes.length);
     if (exitCode != 0) {
-      switch (exitCode) {
-        case EMALLOCNULL:
-          throw new OutOfMemoryError("C heap exhaused malloc() returned NULL");
-        case EFAULT:
-          throw new IllegalStateException("The address referred to by buf is outside the accessible address space.");
-        case EINTR:
-          throw new IllegalStateException("The call was interrupted by a signal handler.");
-        case EINVAL:
-          throw new IllegalStateException("An invalid flag was specified in flags.");
-        default:
-          throw new IllegalStateException("Encountered unknown exit code: " + exitCode + ".");
-      }
+      throw new IllegalStateException("RDRAND failed");
     }
   }
 
+  private static native int rdrand0(byte[] bytes, int length);
 
-  // http://man7.org/linux/man-pages/man2/getrandom.2.html
-  private static native int getrandom0(byte[] bytes, int length, boolean random);
+  static void rdseed(byte[] bytes) {
+    Objects.requireNonNull(bytes);
+    int exitCode = rdseed0(bytes, bytes.length);
+    if (exitCode != 0) {
+      throw new IllegalStateException("RDSEED failed");
+    }
+  }
+
+  private static native int rdseed0(byte[] bytes, int length);
+
+  static void assertAvailable() {
+    if (!isAvailable0()) {
+      throw new IllegalStateException("RDRAND not availble");
+    }
+  }
+
+  private static native boolean isAvailable0();
 
 }

@@ -10,7 +10,7 @@ import java.security.SecureRandom;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.marschall.rdrand.GetrandomProvider;
+import com.github.marschall.rdrand.RdrandProvider;
 
 class GetrandomProviderTest {
 
@@ -18,10 +18,10 @@ class GetrandomProviderTest {
   void getrandom() throws GeneralSecurityException {
     SecureRandom secureRandom;
 
-    secureRandom = SecureRandom.getInstance(GetrandomProvider.GETRANDOM);
+    secureRandom = SecureRandom.getInstance(RdrandProvider.RDRAND);
     verify(secureRandom, 16); // avoid emptying the entropy pool (/proc/sys/kernel/random/entropy_avail)
 
-    secureRandom = SecureRandom.getInstance(GetrandomProvider.GETRANDOM, GetrandomProvider.NAME);
+    secureRandom = SecureRandom.getInstance(RdrandProvider.RDRAND, RdrandProvider.NAME);
     verify(secureRandom, 16); // avoid emptying the entropy pool (/proc/sys/kernel/random/entropy_avail)
   }
 
@@ -29,10 +29,10 @@ class GetrandomProviderTest {
   void geturandom() throws GeneralSecurityException {
     SecureRandom secureRandom;
 
-    secureRandom = SecureRandom.getInstance(GetrandomProvider.GETURANDOM);
+    secureRandom = SecureRandom.getInstance(RdrandProvider.GETURANDOM);
     verify(secureRandom, 128);
 
-    secureRandom = SecureRandom.getInstance(GetrandomProvider.GETURANDOM, GetrandomProvider.NAME);
+    secureRandom = SecureRandom.getInstance(RdrandProvider.GETURANDOM, RdrandProvider.NAME);
     verify(secureRandom, 128);
   }
 
