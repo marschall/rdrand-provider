@@ -1,4 +1,4 @@
-module com.github.marschall.getrandom {
-  provides java.security.Provider with com.github.marschall.getrandom.GetrandomProvider;
+module com.github.marschall.rdrand {
+  provides java.security.Provider with com.github.marschall.rdrand.GetrandomProvider;
   exports com.github.marschall.getrandom;
 }

@@ -1,4 +1,4 @@
-package com.github.marschall.getrandom;
+package com.github.marschall.rdrand;
 
 import java.security.SecureRandomSpi;
 import java.util.Objects;

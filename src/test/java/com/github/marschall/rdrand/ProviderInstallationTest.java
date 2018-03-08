@@ -1,8 +1,10 @@
-package com.github.marschall.getrandom;
+package com.github.marschall.rdrand;
 
 import java.security.Security;
 
 import org.junit.jupiter.api.Test;
+
+import com.github.marschall.rdrand.GetrandomProvider;
 
 class ProviderInstallationTest {
 

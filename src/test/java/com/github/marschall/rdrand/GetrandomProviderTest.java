@@ -1,6 +1,6 @@
-package com.github.marschall.getrandom;
+package com.github.marschall.rdrand;
 
-import static com.github.marschall.getrandom.AllZeros.allZeros;
+import static com.github.marschall.rdrand.AllZeros.allZeros;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,6 +9,8 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 
 import org.junit.jupiter.api.Test;
+
+import com.github.marschall.rdrand.GetrandomProvider;
 
 class GetrandomProviderTest {
 

@@ -1,4 +1,4 @@
-package com.github.marschall.getrandom;
+package com.github.marschall.rdrand;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
