@@ -14,4 +14,4 @@
 
 
 # add the provider at the end
-security.provider.13=getrandom
+security.provider.13=rdrand
