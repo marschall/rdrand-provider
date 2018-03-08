@@ -2,35 +2,53 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.marschall</groupId>
-  <artifactId>getrandom-provider-parent</artifactId>
-  <packaging>pom</packaging>
-  <version>0.1.2-SNAPSHOT</version>
+  <artifactId>rdrand-provider</artifactId>
+  <packaging>nar</packaging>
+  <version>0.1.0-SNAPSHOT</version>
   
-  <name>getrandom() Provider</name>
-  <inceptionYear>2017</inceptionYear>
-  <description>A secure random provider that uses Linux kernel functions.</description>
+  <name>RDRAND Provider</name>
+  <inceptionYear>2018</inceptionYear>
+  <description>A secure random provider that uses the RDRAND hardware instruction.</description>
 
-  <url>https://github.com/marschall/getrandom-provider</url>
-
-  <modules>
-    <module>getrandom-provider</module>
-    <module>getrandom-provider-benchmarks</module>
-  </modules>
+  <url>https://github.com/marschall/rdrand-provider</url>
 
   <scm>
-    <connection>scm:git:git@github.com:marschall/getrandom-provider.git</connection>
-    <developerConnection>scm:git:git@github.com:marschall/getrandom-provider.git</developerConnection>
+    <connection>scm:git:git@github.com:marschall/rdrand-provider.git</connection>
+    <developerConnection>scm:git:git@github.com:marschall/rdrand-provider.git</developerConnection>
     <url>${project.url}</url>
     <tag>HEAD</tag>
   </scm>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Only required to run tests in an IDE that bundles an older version -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Only required to run tests in an IDE that bundles an older version -->
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>${junit.platform.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <ciManagement>
     <system>Travis</system>
-    <url>https://travis-ci.org/marschall/getrandom-provider</url>
+    <url>https://travis-ci.org/marschall/rdrand-provider</url>
   </ciManagement>
 
   <issueManagement>
-    <url>https://github.com/marschall/getrandom-provider/issues</url>
+    <url>https://github.com/marschall/rdrand-provider/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
 
@@ -68,7 +86,88 @@
   </distributionManagement>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
+      <plugin>
+        <groupId>com.github.maven-nar</groupId>
+        <artifactId>nar-maven-plugin</artifactId>
+        <configuration>
+          <java>
+            <include>true</include>
+          </java>
+          <javah>
+            <excludes>
+              <exclude>module-info.class</exclude>
+            </excludes>
+          </javah>
+          <libraries>
+            <library>
+              <type>jni</type>
+              <linkCPP>false</linkCPP>
+            </library>
+          </libraries>
+        </configuration>
+        <executions>
+          <execution>
+            <id>nar-validate</id>
+            <goals>
+              <goal>nar-validate</goal>
+            </goals>
+            <phase>validate</phase>
+          </execution>
+          <execution>
+            <id>nar-compile</id>
+            <goals>
+              <goal>nar-javah</goal>
+              <goal>nar-compile</goal>
+            </goals>
+            <phase>compile</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <archive>
+            <manifestEntries>
+              <Name>com/github/marschall/getrandom/</Name>
+              <Sealed>true</Sealed>
+            </manifestEntries>
+          </archive>
+          <descriptors>
+            <descriptor>src/assembly/jni.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>once</forkMode>
+          <argLine>-Xcheck:jni -Djava.library.path=${project.build.directory}/nar/${project.artifactId}-${project.version}-amd64-Linux-gpp-jni/lib/amd64-Linux-gpp/jni -Djava.security.properties=${project.basedir}/src/test/resources/jvm.java.security</argLine>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-surefire-provider</artifactId>
+            <version>${junit.platform.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -262,15 +361,65 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>jdk9</id>
+      <activation>
+        <jdk>9</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>default-compile</id>
+                <configuration>
+                  <!-- compile everything to ensure module-info contains 
+                    right entries -->
+                  <!-- required when JAVA_HOME is JDK 8 or below -->
+                  <jdkToolchain>
+                    <version>9</version>
+                  </jdkToolchain>
+                  <release>9</release>
+                </configuration>
+              </execution>
+              <execution>
+                <id>base-compile</id>
+                <goals>
+                  <goal>compile</goal>
+                </goals>
+                <!-- recompile everything for target VM except the module-info.java -->
+                <configuration>
+                  <excludes>
+                    <exclude>module-info.java</exclude>
+                  </excludes>
+                  <jdkToolchain>
+                    <version>9</version>
+                  </jdkToolchain>
+                  <release>8</release>
+                </configuration>
+              </execution>
+            </executions>
+            <!-- defaults for compile and testCompile -->
+            <configuration>
+              <!-- jdkToolchain required when JAVA_HOME is JDK 9 or above -->
+              <jdkToolchain>
+                <version>9</version>
+              </jdkToolchain>
+              <release>8</release>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <jmh.version>1.19</jmh.version>
-    <junit.jupiter.version>5.0.2</junit.jupiter.version>
-    <junit.platform.version>1.0.2</junit.platform.version>
+    <junit.jupiter.version>5.1.0</junit.jupiter.version>
+    <junit.platform.version>1.1.0</junit.platform.version>
   </properties>
 
 </project>
