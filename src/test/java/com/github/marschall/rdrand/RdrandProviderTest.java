@@ -12,28 +12,17 @@ import org.junit.jupiter.api.Test;
 
 import com.github.marschall.rdrand.RdrandProvider;
 
-class GetrandomProviderTest {
+class RdrandProviderTest {
 
   @Test
   void getrandom() throws GeneralSecurityException {
     SecureRandom secureRandom;
 
     secureRandom = SecureRandom.getInstance(RdrandProvider.RDRAND);
-    verify(secureRandom, 16); // avoid emptying the entropy pool (/proc/sys/kernel/random/entropy_avail)
+    verify(secureRandom, 1024);
 
     secureRandom = SecureRandom.getInstance(RdrandProvider.RDRAND, RdrandProvider.NAME);
-    verify(secureRandom, 16); // avoid emptying the entropy pool (/proc/sys/kernel/random/entropy_avail)
-  }
-
-  @Test
-  void geturandom() throws GeneralSecurityException {
-    SecureRandom secureRandom;
-
-    secureRandom = SecureRandom.getInstance(RdrandProvider.GETURANDOM);
-    verify(secureRandom, 128);
-
-    secureRandom = SecureRandom.getInstance(RdrandProvider.GETURANDOM, RdrandProvider.NAME);
-    verify(secureRandom, 128);
+    verify(secureRandom, 1024);
   }
 
   private static void verify(SecureRandom secureRandom, int poolSize) {
@@ -44,6 +33,9 @@ class GetrandomProviderTest {
 
     secureRandom.nextBytes(buffer);
     assertThat(buffer, not(allZeros()));
+
+    byte[] seed = secureRandom.generateSeed(poolSize);
+    assertThat(seed, not(allZeros()));
   }
 
 }
