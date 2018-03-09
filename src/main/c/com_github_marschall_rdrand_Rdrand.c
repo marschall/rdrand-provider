@@ -8,8 +8,51 @@
   #define bit_RDSEED  (1 << 18)
 #endif
 
+/*
+ * The maximum number of retries.
+ */
+#define MAX_RETRIES 100
+
 #include "com_github_marschall_rdrand_Rdrand.h"
 
+static inline int _rdrand64_step_retry(unsigned long long *__P)
+{
+  int success = 0;
+  int calls = 0;
+  do
+  {
+    success = _rdrand64_step(__P);
+    calls += 1;
+  }
+  while (success != 1 && calls < MAX_RETRIES);
+  return success;
+}
+
+static inline int _rdrand32_step_retry(unsigned int *__P)
+{
+  int success = 0;
+  int calls = 0;
+  do
+  {
+    success = _rdrand32_step(__P);
+    calls += 1;
+  }
+  while (success != 1 && calls < MAX_RETRIES);
+  return success;
+}
+
+static inline int _rdrand16_step_retry(unsigned short *__P)
+{
+  int success = 0;
+  int calls = 0;
+  do
+  {
+    success = _rdrand16_step(__P);
+    calls += 1;
+  }
+  while (success != 1 && calls < MAX_RETRIES);
+  return success;
+}
 
 JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
   (JNIEnv *env, jclass clazz, jbyteArray bytes, jint array_length)
@@ -31,7 +74,7 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
   unsigned long long *long_buffer = (unsigned long long*) buffer;
   for (int i = 0; i < long_length; i++)
   {
-    success = _rdrand64_step(&long_buffer[i]);
+    success = _rdrand64_step_retry(&long_buffer[i]);
     if (success != 1)
     {
       break;
@@ -45,7 +88,7 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
     if (int_length != 0)
     {
       unsigned int *int_buffer = (unsigned int*) buffer;
-      success = _rdrand32_step(&int_buffer[long_length * 2]);
+      success = _rdrand32_step_retry(&int_buffer[long_length * 2]);
     }
 
     /* write 2 bytes if necessary */
@@ -55,13 +98,13 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
       if (short_length != 0)
       {
         unsigned short *short_buffer = (unsigned short*) buffer;
-        success = _rdrand16_step(&short_buffer[long_length * 4 + int_length * 2]);
+        success = _rdrand16_step_retry(&short_buffer[long_length * 4 + int_length * 2]);
       }
 
       /* write 1 byte if necessary */
       if ((success == 1) && (array_length - long_length * 8 - int_length * 4 - short_length * 2 != 0)) {
         unsigned short last_short_value;
-        success = _rdrand16_step(&last_short_value);
+        success = _rdrand16_step_retry(&last_short_value);
         if (success == 1)
         {
           buffer[array_length - 1] = (jbyte) last_short_value;
