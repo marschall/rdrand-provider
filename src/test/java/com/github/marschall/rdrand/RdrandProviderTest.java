@@ -1,14 +1,24 @@
 package com.github.marschall.rdrand;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class RdrandProviderTest {
+
+  private SecureRandom secureRandom;
+
+  @BeforeEach
+  void setUp() throws NoSuchAlgorithmException {
+    this.secureRandom = SecureRandom.getInstance(RdrandProvider.ALGORITHM);
+  }
 
   @Test
   void isavailalbe() {
@@ -16,34 +26,48 @@ class RdrandProviderTest {
   }
 
   @Test
-  void rdrand() throws GeneralSecurityException {
-    SecureRandom secureRandom;
-
-    secureRandom = SecureRandom.getInstance(RdrandProvider.ALGORITHM);
-    verifyVariousBufferSizes(secureRandom);
-
-    secureRandom = SecureRandom.getInstance(RdrandProvider.ALGORITHM, RdrandProvider.NAME);
-    verifyVariousBufferSizes(secureRandom);
+  void alternativeInstantiation() throws GeneralSecurityException {
+    assertNotNull(SecureRandom.getInstance(RdrandProvider.ALGORITHM, RdrandProvider.NAME));
   }
 
-  private static void verifyVariousBufferSizes(SecureRandom secureRandom) {
+  @Test
+  void rdrand() throws GeneralSecurityException {
+    assertNotNull(this.secureRandom);
+    verifyBytesVariousBufferSizes(this.secureRandom);
+  }
+
+  @Test
+  void rdseed() throws GeneralSecurityException {
+    assumeTrue(Rdrand.isRdseedSupported());
+    assertNotNull(this.secureRandom);
+    verifySeedVariousBufferSizes(this.secureRandom);
+  }
+
+  private static void verifyBytesVariousBufferSizes(SecureRandom secureRandom) {
     for (int i = 1; i < 16; i++) {
-      verify(secureRandom, i);
+      verifyBytes(secureRandom, i);
     }
 
-    verify(secureRandom, 1024);
+    verifyBytes(secureRandom, 1024);
   }
 
-  private static void verify(SecureRandom secureRandom, int poolSize) {
-    System.out.println(poolSize);
-    assertNotNull(secureRandom);
+  private static void verifyBytes(SecureRandom secureRandom, int poolSize) {
+    byte[] buffer = new byte[poolSize];
+    AllZeroBytesAssert.assertThat(buffer).allZeros();
 
-//    byte[] buffer = new byte[poolSize];
-//    AllZeroBytesAssert.assertThat(buffer).allZeros();
-//
-//    secureRandom.nextBytes(buffer);
-//    AllZeroBytesAssert.assertThat(buffer).notAllZeros();
+    secureRandom.nextBytes(buffer);
+    AllZeroBytesAssert.assertThat(buffer).notAllZeros();
+  }
 
+  private static void verifySeedVariousBufferSizes(SecureRandom secureRandom) {
+    for (int i = 1; i < 16; i++) {
+      verifySeed(secureRandom, i);
+    }
+
+    verifySeed(secureRandom, 1024);
+  }
+
+  private static void verifySeed(SecureRandom secureRandom, int poolSize) {
     byte[] seed = secureRandom.generateSeed(poolSize);
     assertThat(seed).hasSize(poolSize);
     AllZeroBytesAssert.assertThat(seed).notAllZeros();

@@ -11,11 +11,15 @@ import java.util.Objects;
 
 final class Rdrand {
 
+  private static final boolean SUPPORTED;
+
   static {
     String version = getVersion();
     String libraryName = "rdrand-provider-" + version;
+    boolean supported = false;
     try {
       Runtime.getRuntime().loadLibrary(libraryName);
+      supported = isRdrandSupported() && isRdseedSupported();
     } catch (UnsatisfiedLinkError e) {
       // the library is not in the library path
       // extract it from the JAR and load it from there
@@ -32,6 +36,7 @@ final class Rdrand {
         }
       }
     }
+    SUPPORTED = supported;
   }
 
   private static String getVersion() {
@@ -106,11 +111,21 @@ final class Rdrand {
   private static native int rdseed0(byte[] bytes, int length);
 
   static void assertAvailable() {
-    if (!isAvailable0()) {
+    if (!SUPPORTED) {
       throw new IllegalStateException("RDRAND not availble");
     }
   }
 
-  private static native boolean isAvailable0();
+  static boolean isRdrandSupported() {
+    return isRdrandSupported0();
+  }
+
+  static boolean isRdseedSupported() {
+    return isRdseedSupported0();
+  }
+
+  private static native boolean isRdrandSupported0();
+
+  private static native boolean isRdseedSupported0();
 
 }

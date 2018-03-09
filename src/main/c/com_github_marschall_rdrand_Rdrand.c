@@ -223,16 +223,38 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdseed0
   return (success == 1) ? 0 : 1;
 }
 
-JNIEXPORT jboolean JNICALL Java_com_github_marschall_rdrand_Rdrand_isAvailable0
+JNIEXPORT jboolean JNICALL Java_com_github_marschall_rdrand_Rdrand_isRdrandSupported0
   (JNIEnv *env, jclass clazz)
 {
 
-  unsigned int sig, eax, ebx, ecx, edx;
+  unsigned int eax, ebx, ecx, edx;
 
-  __get_cpuid_max(0x80000000, &sig);
-  if (__get_cpuid(sig, &eax, &ebx, &ecx, &edx))
+  if (__get_cpuid(1, &eax, &ebx, &ecx, &edx))
   {
-    if (((ecx & bit_RDRND) == bit_RDRND) && ((ebx & bit_RDSEED) == bit_RDSEED))
+    if ((ecx & bit_RDRND) == bit_RDRND)
+    {
+      return JNI_TRUE;
+    }
+    else
+    {
+      return JNI_FALSE;
+    }
+  }
+  else
+  {
+    return JNI_FALSE;
+  }
+}
+
+JNIEXPORT jboolean JNICALL Java_com_github_marschall_rdrand_Rdrand_isRdseedSupported0
+  (JNIEnv *env, jclass clazz)
+{
+
+  unsigned int eax, ebx, ecx, edx;
+
+  if (__get_cpuid(7, &eax, &ebx, &ecx, &edx))
+  {
+    if ((ebx & bit_RDSEED) == bit_RDSEED)
     {
       return JNI_TRUE;
     }
