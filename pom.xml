@@ -108,6 +108,7 @@
           <c>
             <options>
               <option>-mrdrnd</option>
+              <option>-mrdseed</option>
             </options>
           </c>
           <javah>

@@ -35,17 +35,18 @@ class RdrandProviderTest {
   }
 
   private static void verify(SecureRandom secureRandom, int poolSize) {
+    System.out.println(poolSize);
     assertNotNull(secureRandom);
 
-    byte[] buffer = new byte[poolSize];
-    AllZeroBytesAssert.assertThat(buffer).allZeros();
+//    byte[] buffer = new byte[poolSize];
+//    AllZeroBytesAssert.assertThat(buffer).allZeros();
+//
+//    secureRandom.nextBytes(buffer);
+//    AllZeroBytesAssert.assertThat(buffer).notAllZeros();
 
-    secureRandom.nextBytes(buffer);
-    AllZeroBytesAssert.assertThat(buffer).notAllZeros();
-
-//    byte[] seed = secureRandom.generateSeed(poolSize);
-//    assertThat(seed).hasSize(poolSize);
-//    AllZeroBytesAssert.assertThat(seed).notAllZeros();
+    byte[] seed = secureRandom.generateSeed(poolSize);
+    assertThat(seed).hasSize(poolSize);
+    AllZeroBytesAssert.assertThat(seed).notAllZeros();
   }
 
 }
