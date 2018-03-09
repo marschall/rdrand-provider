@@ -1,13 +1,12 @@
 #include <jni.h>
 
-#include <immintrin.h>
+//#include <immintrin.h>
+#include <x86intrin.h>
 #include <cpuid.h>
 
 #ifndef bit_RDSEED
   #define bit_RDSEED  (1 << 18)
 #endif
-
-#define __RDRND__ 1
 
 #include "com_github_marschall_rdrand_Rdrand.h"
 
@@ -78,9 +77,10 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
 }
 
 JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdseed0
-  (JNIEnv *env, jclass clazz, jbyteArray bytes, jint arrayLength)
+  (JNIEnv *env, jclass clazz, jbyteArray bytes, jint array_length)
 {
   _Static_assert (sizeof(jbyte) == sizeof(char), "sizeof(jbyte) == sizeof(char)");
+  _Static_assert (sizeof(jint) == sizeof(int), "sizeof(jint) == sizeof(int)");
 
   return 0;
 }
