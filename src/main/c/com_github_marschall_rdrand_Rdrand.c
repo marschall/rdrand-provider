@@ -18,7 +18,7 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
   _Static_assert (sizeof(jint) == sizeof(int), "sizeof(jint) == sizeof(int)");
 
   jboolean is_copy;
-  int ret = 0;
+  int success = 1;
 
   jbyte *buffer = (*env)->GetPrimitiveArrayCritical(env, bytes, &is_copy);
   if (buffer == NULL)
@@ -29,40 +29,40 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
   /* write 8 bytes at a time */
   int long_length = array_length / 8;
   unsigned long long *long_buffer = (unsigned long long*) buffer;
-  for (int i = 0; i < long_length; i += 8)
+  for (int i = 0; i < long_length; i++)
   {
-    ret = _rdrand64_step(&long_buffer[i]);
-    if (ret != 0)
+    success = _rdrand64_step(&long_buffer[i]);
+    if (success != 1)
     {
       break;
     }
   }
 
-  if (ret == 0)
+  if (success == 1)
   {
     /* write 4 bytes if necessary */
-    int int_length = (array_length - long_length) / 4;
+    int int_length = (array_length - long_length * 8) / 4;
     if (int_length != 0)
     {
       unsigned int *int_buffer = (unsigned int*) buffer;
-      ret = _rdrand32_step(&int_buffer[long_length * 2]);
+      success = _rdrand32_step(&int_buffer[long_length * 2]);
     }
 
     /* write 2 bytes if necessary */
-    if (ret == 0)
+    if (success == 1)
     {
-      int short_length = (array_length - long_length - int_length) / 2;
+      int short_length = (array_length - long_length * 8 - int_length * 4) / 2;
       if (short_length != 0)
       {
         unsigned short *short_buffer = (unsigned short*) buffer;
-        ret = _rdrand16_step(&short_buffer[long_length * 4 + int_length * 2]);
+        success = _rdrand16_step(&short_buffer[long_length * 4 + int_length * 2]);
       }
 
       /* write 1 byte if necessary */
-      if ((ret == 0) && (array_length - long_length - int_length - short_length != 0)) {
+      if ((success == 1) && (array_length - long_length * 8 - int_length * 4 - short_length * 2 != 0)) {
         unsigned short last_short_value;
-        ret = _rdrand16_step(&last_short_value);
-        if (ret == 0)
+        success = _rdrand16_step(&last_short_value);
+        if (success == 1)
         {
           buffer[array_length - 1] = (jbyte) last_short_value;
         }
@@ -73,7 +73,7 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
 
   (*env)->ReleasePrimitiveArrayCritical(env, bytes, buffer, 0);
 
-  return ret;
+  return (success == 1) ? 0 : 1;
 }
 
 JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdseed0
