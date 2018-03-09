@@ -1,6 +1,6 @@
 # RDRAND SecureRandomSPI [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/rdrand-provider/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/rdrand-provider)  [![Javadocs](https://www.javadoc.io/badge/com.github.marschall/rdrand-provider.svg)](https://www.javadoc.io/doc/com.github.marschall/rdrand-provider)
 
-A `SecureRandomSPI` that makes the [RDRAND](https://en.wikipedia.org/wiki/RdRand) and `RDSEED available to `SecureRandom`.
+A `SecureRandomSPI` that makes the [RDRAND](https://en.wikipedia.org/wiki/RdRand) and `RDSEED` available to `SecureRandom`.
 
 * does not use syscalls
 * uses JNI criticals to avoid allocation and copying
@@ -97,7 +97,3 @@ Point can be configured on [the Manager Component](https://tomcat.apache.org/tom
 </Manager>
 ```
 
-https://en.wikipedia.org/wiki/RdRand
-https://software.intel.com/sites/landingpage/IntrinsicsGuide/#cats=Random
-https://github.com/gcc-mirror/gcc/blob/master/gcc/config/i386/immintrin.h
-http://www.electronicdesign.com/learning-resources/understanding-intels-ivy-bridge-random-number-generator

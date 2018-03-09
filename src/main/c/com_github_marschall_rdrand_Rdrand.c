@@ -10,6 +10,9 @@
 
 /*
  * The maximum number of retries.
+ *
+ * RDSEED and RDRAND and fail either due to recoverable or not recoverable errors.
+ * There is no way to distinct between them so we have to retry but not forever.
  */
 #define MAX_RETRIES 100
 
