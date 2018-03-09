@@ -58,15 +58,23 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
         unsigned short *short_buffer = (unsigned short*) buffer;
         ret = _rdrand16_step(&short_buffer[long_length * 4 + int_length * 2]);
       }
-    }
 
-    /* write 1 byte if necessary */
-      unsigned short last_short_value;
+      /* write 1 byte if necessary */
+      if ((ret == 0) && (array_length - long_length - int_length - short_length != 0)) {
+        unsigned short last_short_value;
+        ret = _rdrand16_step(&last_short_value);
+        if (ret == 0)
+        {
+          buffer[array_length - 1] = (jbyte) last_short_value;
+        }
+      }
+
+    }
   }
 
   (*env)->ReleasePrimitiveArrayCritical(env, bytes, buffer, 0);
 
-  return 0;
+  return ret;
 }
 
 JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdseed0
