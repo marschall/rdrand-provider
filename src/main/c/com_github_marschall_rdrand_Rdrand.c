@@ -147,6 +147,7 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
         if (success == 1)
         {
           buffer[array_length - 1] = (jbyte) last_short_value;
+          last_short_value = 0;
         }
       }
 
@@ -212,6 +213,7 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdseed0
         if (success == 1)
         {
           buffer[array_length - 1] = (jbyte) last_short_value;
+          last_short_value = 0;
         }
       }
 
