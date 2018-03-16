@@ -1,6 +1,5 @@
 #include <jni.h>
 
-//#include <immintrin.h>
 #include <x86intrin.h>
 #include <cpuid.h>
 
@@ -31,32 +30,6 @@ static inline int _rdrand64_step_retry(unsigned long long *__P)
   return success;
 }
 
-static inline int _rdrand32_step_retry(unsigned int *__P)
-{
-  int success = 0;
-  int calls = 0;
-  do
-  {
-    success = _rdrand32_step(__P);
-    calls += 1;
-  }
-  while (success != 1 && calls < MAX_RETRIES);
-  return success;
-}
-
-static inline int _rdrand16_step_retry(unsigned short *__P)
-{
-  int success = 0;
-  int calls = 0;
-  do
-  {
-    success = _rdrand16_step(__P);
-    calls += 1;
-  }
-  while (success != 1 && calls < MAX_RETRIES);
-  return success;
-}
-
 static inline int _rdseed64_step_retry(unsigned long long *__P)
 {
   int success = 0;
@@ -64,32 +37,6 @@ static inline int _rdseed64_step_retry(unsigned long long *__P)
   do
   {
     success = _rdseed64_step(__P);
-    calls += 1;
-  }
-  while (success != 1 && calls < MAX_RETRIES);
-  return success;
-}
-
-static inline int _rdseed32_step_retry(unsigned int *__P)
-{
-  int success = 0;
-  int calls = 0;
-  do
-  {
-    success = _rdseed32_step(__P);
-    calls += 1;
-  }
-  while (success != 1 && calls < MAX_RETRIES);
-  return success;
-}
-
-static inline int _rdseed16_step_retry(unsigned short *__P)
-{
-  int success = 0;
-  int calls = 0;
-  do
-  {
-    success = _rdseed16_step(__P);
     calls += 1;
   }
   while (success != 1 && calls < MAX_RETRIES);
@@ -125,35 +72,39 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdrand0
 
   if (success == 1)
   {
-    /* write 4 bytes if necessary */
-    int int_length = (array_length - long_length * 8) / 4;
-    if (int_length != 0)
+    int length_left = array_length - long_length * 8;
+    if (length_left > 0)
     {
-      unsigned int *int_buffer = (unsigned int*) buffer;
-      success = _rdrand32_step_retry(&int_buffer[long_length * 2]);
-    }
-
-    /* write 2 bytes if necessary */
-    if (success == 1)
-    {
-      int short_length = (array_length - long_length * 8 - int_length * 4) / 2;
-      if (short_length != 0)
+      unsigned long long unaligned_data;
+      success = _rdrand64_step_retry(&unaligned_data);
+      if (success == 1)
       {
-        unsigned short *short_buffer = (unsigned short*) buffer;
-        success = _rdrand16_step_retry(&short_buffer[long_length * 4 + int_length * 2]);
-      }
 
-      /* write 1 byte if necessary */
-      if ((success == 1) && (array_length - long_length * 8 - int_length * 4 - short_length * 2 != 0)) {
-        unsigned short last_short_value;
-        success = _rdrand16_step_retry(&last_short_value);
-        if (success == 1)
+        /* write 4 bytes if necessary */
+        int int_length = (array_length - long_length * 8) / 4;
+        if (int_length != 0)
         {
-          buffer[array_length - 1] = (jbyte) last_short_value;
-          last_short_value = 0;
+          unsigned int *int_buffer = (unsigned int*) buffer;
+          unsigned int int_value = (unsigned int) (unaligned_data >> 32);
+          int_buffer[long_length * 2] = int_value;
+        }
+
+        int short_length = (array_length - long_length * 8 - int_length * 4) / 2;
+        if (short_length != 0)
+        {
+          unsigned short *short_buffer = (unsigned short*) buffer;
+          unsigned short short_value = (unsigned int) ((unaligned_data >> 16) & 0xffff);
+          short_buffer[long_length * 4 + int_length * 2] = short_value;
+        }
+
+        /* write 1 byte if necessary */
+        int byte_length = array_length - long_length * 8 - int_length * 4 - short_length * 2;
+        if (byte_length != 0)
+        {
+          jbyte byte_value = (jbyte) (unaligned_data & 0xff);
+          buffer[array_length - 1] = byte_value;
         }
       }
-
     }
   }
 
@@ -191,35 +142,39 @@ JNIEXPORT jint JNICALL Java_com_github_marschall_rdrand_Rdrand_rdseed0
 
   if (success == 1)
   {
-    /* write 4 bytes if necessary */
-    int int_length = (array_length - long_length * 8) / 4;
-    if (int_length != 0)
+    int length_left = array_length - long_length * 8;
+    if (length_left > 0)
     {
-      unsigned int *int_buffer = (unsigned int*) buffer;
-      success = _rdseed32_step_retry(&int_buffer[long_length * 2]);
-    }
-
-    /* write 2 bytes if necessary */
-    if (success == 1)
-    {
-      int short_length = (array_length - long_length * 8 - int_length * 4) / 2;
-      if (short_length != 0)
+      unsigned long long unaligned_data;
+      success = _rdseed64_step_retry(&unaligned_data);
+      if (success == 1)
       {
-        unsigned short *short_buffer = (unsigned short*) buffer;
-        success = _rdseed16_step_retry(&short_buffer[long_length * 4 + int_length * 2]);
-      }
 
-      /* write 1 byte if necessary */
-      if ((success == 1) && (array_length - long_length * 8 - int_length * 4 - short_length * 2 != 0)) {
-        unsigned short last_short_value;
-        success = _rdseed16_step_retry(&last_short_value);
-        if (success == 1)
+        /* write 4 bytes if necessary */
+        int int_length = (array_length - long_length * 8) / 4;
+        if (int_length != 0)
         {
-          buffer[array_length - 1] = (jbyte) last_short_value;
-          last_short_value = 0;
+          unsigned int *int_buffer = (unsigned int*) buffer;
+          unsigned int int_value = (unsigned int) (unaligned_data >> 32);
+          int_buffer[long_length * 2] = int_value;
+        }
+
+        int short_length = (array_length - long_length * 8 - int_length * 4) / 2;
+        if (short_length != 0)
+        {
+          unsigned short *short_buffer = (unsigned short*) buffer;
+          unsigned short short_value = (unsigned int) ((unaligned_data >> 16) & 0xffff);
+          short_buffer[long_length * 4 + int_length * 2] = short_value;
+        }
+
+        /* write 1 byte if necessary */
+        int byte_length = array_length - long_length * 8 - int_length * 4 - short_length * 2;
+        if (byte_length != 0)
+        {
+          jbyte byte_value = (jbyte) (unaligned_data & 0xff);
+          buffer[array_length - 1] = byte_value;
         }
       }
-
     }
   }
 
