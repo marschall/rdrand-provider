@@ -1,0 +1,12 @@
+[B object internals:
+ OFFSET  SIZE   TYPE DESCRIPTION                               VALUE
+      0     4        (object header)                           01 00 00 00 (00000001 00000000 00000000 00000000) (1)
+      4     4        (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+      8     4        (object header)                           a8 d7 be 48 (10101000 11010111 10111110 01001000) (1220466600)
+     12     4        (object header)                           73 7f 00 00 (01110011 01111111 00000000 00000000) (32627)
+     16     4        (object header)                           02 00 00 00 (00000010 00000000 00000000 00000000) (2)
+     20     4        (alignment/padding gap)                  
+     24     2   byte [B.<elements>                             N/A
+     26     6        (loss due to the next object alignment)
+Instance size: 32 bytes
+Space losses: 4 bytes internal + 6 bytes external = 10 bytes total
