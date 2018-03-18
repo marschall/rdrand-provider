@@ -1,4 +1,4 @@
-# RDRAND SecureRandomSPI [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/rdrand-provider/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/rdrand-provider)  [![Javadocs](https://www.javadoc.io/badge/com.github.marschall/rdrand-provider.svg)](https://www.javadoc.io/doc/com.github.marschall/rdrand-provider)
+# RDRAND SecureRandomSPI [![Build Status](https://travis-ci.org/marschall/rdrand-provider.svg?branch=master)](https://travis-ci.org/marschall/rdrand-provider) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/rdrand-provider/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.marschall/rdrand-provider)  [![Javadocs](https://www.javadoc.io/badge/com.github.marschall/rdrand-provider.svg)](https://www.javadoc.io/doc/com.github.marschall/rdrand-provider)
 
 A `SecureRandomSPI` that makes the [RDRAND](https://en.wikipedia.org/wiki/RdRand) and `RDSEED` available to `SecureRandom`.
 
@@ -68,6 +68,11 @@ This can be done [per JVM installation](https://docs.oracle.com/javase/9/securit
 The provider uses the ServiceLoader mechanism therefore using the `rdrand` string is enough, there is no need to use the fully qualified class name.
 
 Note that for this to work the provider JAR needs to be in the class path or module path.
+
+### Performance
+
+[Performance](https://github.com/marschall/random-provider-benchmarks/tree/master/src/main/output/rdrand) compared to `NativePRNGNonBlocking` is similar for small single threaded workloads but a lot better for multi threaded workloads.
+
 
 ### Usage for Tomcat Session Ids
 
