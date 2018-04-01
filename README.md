@@ -71,7 +71,7 @@ Note that for this to work the provider JAR needs to be in the class path or mod
 
 ### Performance
 
-[Performance](https://github.com/marschall/random-provider-benchmarks/tree/master/src/main/output/rdrand) compared to `NativePRNGNonBlocking` is similar for small single threaded workloads but a lot better for multi threaded workloads.
+[Performance](https://github.com/marschall/random-provider-benchmarks/tree/master/src/main/output/rdrand) compared to `NativePRNGNonBlocking` is similar for small, single threaded workloads but a lot better for multi threaded workloads.
 
 
 ### Usage for Tomcat Session Ids
