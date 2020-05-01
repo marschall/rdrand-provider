@@ -28,7 +28,7 @@ public final class RdrandProvider extends Provider {
    * by JCA.
    */
   public RdrandProvider() {
-    super(NAME, 0.1d, "rdrand (SecureRandom)");
+    super(NAME, 0.2d, "rdrand (SecureRandom)");
     this.put("SecureRandom." + ALGORITHM, RdrandSecureRandomSpi.class.getName());
     this.put("SecureRandom." + ALGORITHM + " ThreadSafe", "true");
 //    this.put("SecureRandom." + ALGORITHM + " ImplementedIn", "Hardware");
