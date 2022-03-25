@@ -18,37 +18,40 @@
     <tag>HEAD</tag>
   </scm>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>5.8.2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.jupiter.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- Only required to run tests in an IDE that bundles an older version -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.jupiter.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- Only required to run tests in an IDE that bundles an older version -->
-    <dependency>
-      <groupId>org.junit.platform</groupId>
-      <artifactId>junit-platform-launcher</artifactId>
-      <version>${junit.platform.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.9.1</version>
+      <version>3.22.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.openjdk.jol</groupId>
       <artifactId>jol-core</artifactId>
-      <version>0.9</version>
+      <version>0.16</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -104,6 +107,15 @@
     </resources>
     <plugins>
       <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs>
+            <arg>-h</arg>
+            <arg>${project.build.directory}/nar/javah-include</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>com.github.maven-nar</groupId>
         <artifactId>nar-maven-plugin</artifactId>
         <configuration>
@@ -117,11 +129,6 @@
               <option>-std=c99</option>
             </options>
           </c>
-          <javah>
-            <excludes>
-              <exclude>module-info.class</exclude>
-            </excludes>
-          </javah>
           <libraries>
             <library>
               <type>jni</type>
@@ -140,7 +147,6 @@
           <execution>
             <id>nar-compile</id>
             <goals>
-              <goal>nar-javah</goal>
               <goal>nar-compile</goal>
             </goals>
             <phase>compile</phase>
@@ -172,23 +178,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-surefire-provider</artifactId>
-            <version>${junit.platform.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <links>
@@ -214,21 +203,6 @@
             <goals>
               <goal>jandex</goal>
             </goals>
-            <!-- at the moment jandex can't handle module-info.class -->
-            <configuration>
-              <fileSets>
-                <fileSet>
-                  <directory>${project.build.outputDirectory}</directory>
-                  <includes>
-                    <include>**/*.class</include>
-                  </includes>
-                  <excludes>
-                    <exclude>**/module-info.class</exclude>
-                  </excludes>
-                  <useDefaultExcludes>true</useDefaultExcludes>
-                </fileSet>
-              </fileSets>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -256,15 +230,15 @@
       <plugins>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.3.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.1.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.7.0</version>
+          <version>3.10.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
@@ -272,7 +246,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-gpg-plugin</artifactId>
-          <version>1.6</version>
+          <version>3.0.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
@@ -280,19 +254,19 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.3.2</version>
         </plugin>
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.2.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
@@ -300,54 +274,29 @@
         </plugin>
         <plugin>
           <artifactId>maven-scm-plugin</artifactId>
-          <version>1.9.5</version>
+          <version>1.12.2</version>
         </plugin>
         <plugin>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.2.40</version>
         </plugin>
         <plugin>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.6</version>
+          <version>3.11.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.19.1</version>
+          <version>2.22.2</version>
         </plugin>
         <plugin>
           <groupId>org.jboss.jandex</groupId>
           <artifactId>jandex-maven-plugin</artifactId>
-          <version>1.0.5</version>
+          <version>1.2.2</version>
         </plugin>
         <plugin>
           <groupId>com.github.maven-nar</groupId>
           <artifactId>nar-maven-plugin</artifactId>
-          <version>3.5.2</version>
-        </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.jboss.jandex</groupId>
-                    <artifactId>jandex-maven-plugin</artifactId>
-                    <versionRange>[1.0.1,)</versionRange>
-                    <goals>
-                      <goal>jandex</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
+          <version>3.10.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -375,131 +324,82 @@
       </build>
     </profile>
     <profile>
-      <id>jdk9</id>
+      <id>jdk-8</id>
       <activation>
-        <jdk>9</jdk>
+        <jdk>1.8</jdk>
       </activation>
       <build>
         <plugins>
           <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>default-compile</id>
-                <configuration>
-                  <!-- compile everything to ensure module-info contains 
-                    right entries -->
-                  <!-- required when JAVA_HOME is JDK 8 or below -->
-                  <jdkToolchain>
-                    <version>9</version>
-                  </jdkToolchain>
-                  <release>9</release>
-                </configuration>
-              </execution>
-              <execution>
-                <id>base-compile</id>
-                <goals>
-                  <goal>compile</goal>
-                </goals>
-                <!-- recompile everything for target VM except the module-info.java -->
-                <configuration>
-                  <excludes>
-                    <exclude>module-info.java</exclude>
-                  </excludes>
-                  <jdkToolchain>
-                    <version>9</version>
-                  </jdkToolchain>
-                  <release>8</release>
-                </configuration>
-              </execution>
-            </executions>
-            <!-- defaults for compile and testCompile -->
-            <configuration>
-              <!-- jdkToolchain required when JAVA_HOME is JDK 9 or above -->
-              <jdkToolchain>
-                <version>9</version>
-              </jdkToolchain>
-              <release>8</release>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <!-- https://github.com/travis-ci/travis-ci/issues/4178 -->
-      <!-- https://github.com/travis-ci/travis-ci/issues/5520 -->
-      <id>travis</id>
-      <activation>
-        <property>
-          <name>env.TRAVIS</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <!--
-              can't use toolchains
-              https://github.com/travis-ci/travis-ci/issues/2727
-            -->
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
               <source>${java.version}</source>
               <target>${java.version}</target>
-              <excludes>
-                <exclude>module-info.java</exclude>
-              </excludes>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <forkMode>once</forkMode>
+              <argLine>
+                -Xcheck:jni
+                -Djava.library.path=${project.build.directory}/nar/${project.artifactId}-${project.version}-${nar.aol}-jni/lib/${nar.aol}/jni
+                -Djava.security.properties=${project.basedir}/src/test/resources/additional.java8.security
+              </argLine>
             </configuration>
           </plugin>
         </plugins>
       </build>
     </profile>
     <profile>
-      <id>mac</id>
+      <id>jdk-9-plus</id>
       <activation>
-        <os>
-          <family>mac</family>
-        </os>
+        <jdk>[9,</jdk>
       </activation>
       <build>
         <plugins>
           <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <release>8</release>
+            </configuration>
+            <executions>
+              <execution>
+                <id>compile-java-9</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>compile</goal>
+                </goals>
+                <configuration>
+                  <release>9</release>
+                  <compileSourceRoots>
+                    <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>
+                  </compileSourceRoots>
+                  <multiReleaseOutput>true</multiReleaseOutput>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <forkMode>once</forkMode>
-              <argLine>-Xcheck:jni -Djava.library.path=${project.build.directory}/nar/${project.artifactId}-${project.version}-x86_64-MacOSX-gpp-jni/lib/x86_64-MacOSX-gpp/jni -Djava.security.properties=${project.basedir}/src/test/resources/jvm.java.security</argLine>
+              <argLine>
+                -Xcheck:jni
+                -Djava.library.path=${project.build.directory}/nar/${project.artifactId}-${project.version}-${nar.aol}-jni/lib/${nar.aol}/jni
+                -Djava.security.properties=${project.basedir}/src/test/resources/additional.java9.security
+              </argLine>
             </configuration>
           </plugin>
         </plugins>
       </build>
     </profile>
-      <profile>
-        <id>unix</id>
-        <activation>
-          <os>
-            <family>unix</family>
-            <name>Linux</name>
-          </os>
-        </activation>
-        <build>
-          <plugins>
-            <plugin>
-              <artifactId>maven-surefire-plugin</artifactId>
-              <configuration>
-                <forkMode>once</forkMode>
-                <argLine>-Xcheck:jni -Djava.library.path=${project.build.directory}/nar/${project.artifactId}-${project.version}-amd64-Linux-gpp-jni/lib/amd64-Linux-gpp/jni -Djava.security.properties=${project.basedir}/src/test/resources/jvm.java.security</argLine>
-              </configuration>
-            </plugin>
-          </plugins>
-        </build>
-      </profile>
   </profiles>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <junit.jupiter.version>5.1.0</junit.jupiter.version>
-    <junit.platform.version>1.1.0</junit.platform.version>
   </properties>
 
 </project>

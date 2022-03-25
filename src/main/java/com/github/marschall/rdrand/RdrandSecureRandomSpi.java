@@ -12,6 +12,13 @@ public final class RdrandSecureRandomSpi extends SecureRandomSpi {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Default constructor for JCA, should not be called directly.
+   */
+  public RdrandSecureRandomSpi() {
+    super();
+  }
+
   @Override
   protected void engineSetSeed(byte[] seed) {
     Objects.requireNonNull(seed);
