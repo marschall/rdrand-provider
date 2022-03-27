@@ -24,6 +24,10 @@ static inline int _rdrand64_step_retry(unsigned long long *__P)
   do
   {
     success = _rdrand64_step(__P);
+    if (success != 1)
+    {
+      _mm_pause();
+    }
     calls += 1;
   }
   while (success != 1 && calls < MAX_RETRIES);
